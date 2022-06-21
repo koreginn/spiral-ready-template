@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+  application_nochat:
+    image: application_nochat
+    container_name: application_nochat
+    restart: always
+    tty: true
+    build:
+      context: .
+    environment:
+      - RR_WORKERS=1
+      - RR_MAX_JOBS=1
+      - AMPQ_ADDR=amqp://nochat:12345678@application_nochat_rabbitmq:5672/
+      - AMPQ_WORKERS=5
+      - AMPQ_MAX_JOBS=300
+      - AMPQ_JOB_ATTEMPTS=5
+      - AMPQ_JOB_RETRY_DELAY=40
+      - GENERAL_DB_HOST=application_nochat_mysql
+      - GENERAL_DB_PORT=3306
+      - GENERAL_DB_NAME=nochat
+      - GENERAL_DB_USER=root
+      - GENERAL_DB_PASSWORD=12345678
+      - TG_NOTY_CHAT_ID_AWD=TG_CHAT_ID
+      - TG_NOTY_HOST=TG_HOST
+    depends_on:
+      - application_nochat_mysql
+    volumes:
+      - .:/var/www
+      - /var/www/vendor
+    networks:
+      - default_host
+    ports:
+      - "7000:80"
+
+  application_nochat_rabbitmq:
+    image: rabbitmq:3.8
+    container_name: application_nochat_rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=nochat
+      - RABBITMQ_DEFAULT_PASS=12345678
+    ports:
+      - "54370:5672"
+    networks:
+      - default_host
+
+  application_nochat_mysql:
+    image: mariadb:10.5.4
+    container_name: application_nochat_mysql
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: nochat
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 12345678
+    networks:
+      - default_host
+    ports:
+      - "3306:3306"
+
+networks:
+  default_host:
+    driver: bridge
+    name: default_host

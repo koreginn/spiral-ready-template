@@ -1,0 +1,61 @@
+# http service configuration.
+http:
+    address: 0.0.0.0:80
+
+    middleware: [ "headers" ]
+
+    workers:
+        command: "php app.php"
+        pool:
+            numWorkers: ${RR_WORKERS}
+            maxJobs: ${RR_MAX_JOBS}
+
+# Additional HTTP headers and CORS control.
+headers:
+    cors:
+        allowedOrigin: "*"
+        allowedHeaders: "*"
+        allowedMethods: "GET,POST,PUT,DELETE"
+        allowCredentials: true
+        exposedHeaders: "Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma"
+        maxAge: 600
+
+# queue and jobs
+jobs:
+    amqp.addr: ${AMPQ_ADDR}
+    pipelines:
+        upload-contacts:
+            broker: amqp
+            queue:  upload-contacts
+        send-message:
+            broker: amqp
+            queue: service-send-message
+    consume: ["local"]
+    dispatch:
+        app-job-uploadContactJob:
+            pipeline: "upload-contacts"
+            Attempts: ${AMPQ_JOB_ATTEMPTS}
+            retryDelay: ${AMPQ_JOB_RETRY_DELAY}
+        app-job-telegramMessageJob:
+            pipeline: "send-message"
+            Attempts: ${AMPQ_JOB_ATTEMPTS}
+            retryDelay: ${AMPQ_JOB_RETRY_DELAY}
+    workers:
+        command: "php app.php"
+        pool:
+            numWorkers: ${AMPQ_WORKERS}
+            maxJobs: ${AMPQ_MAX_JOBS}
+
+# serve static files
+static:
+    dir:    "public"
+    forbid: [".php", ".htaccess"]
+
+# control the max memory usage
+limit:
+    services:
+        http.maxMemory: 150 # maximum allowed memory consumption per worker (soft)
+        http.TTL: 360 # maximum time to live for the worker (soft)
+        http.idleTTL: 300 # maximum allowed amount of time worker can spend in idle before being removed (for weak db connections, soft)
+        http.execTTL: 100 # max_execution_time (process will be killed)
+        jobs.maxMemory: 150

@@ -1,0 +1,2 @@
+*/5 * * * * php /var/www/app.php awd:ads
+0 */12 * * * php /var/www/app.php clear:table
