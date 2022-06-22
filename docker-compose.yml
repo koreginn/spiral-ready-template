@@ -20,7 +20,7 @@ services:
       - GENERAL_DB_PORT=3306
       - GENERAL_DB_NAME=nochat
       - GENERAL_DB_USER=root
-      - GENERAL_DB_PASSWORD=123456789
+      - GENERAL_DB_PASSWORD=secret_pass
       - TG_NOTY_CHAT_ID_AWD=TG_CHAT_ID
       - TG_NOTY_HOST=TG_HOST
     depends_on:
@@ -53,10 +53,10 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_ROOT_PASSWORD: secret_pass
       MYSQL_DATABASE: nochat
       MYSQL_USER: root
-      MYSQL_PASSWORD: 12345678
+      MYSQL_PASSWORD: secret_pass
     networks:
       - default_host
     ports:
