@@ -20,7 +20,7 @@ services:
       - GENERAL_DB_PORT=3306
       - GENERAL_DB_NAME=nochat
       - GENERAL_DB_USER=root
-      - GENERAL_DB_PASSWORD=12345678
+      - GENERAL_DB_PASSWORD=test_pass
       - TG_NOTY_CHAT_ID_AWD=TG_CHAT_ID
       - TG_NOTY_HOST=TG_HOST
     depends_on:
