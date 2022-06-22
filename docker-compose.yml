@@ -53,7 +53,7 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_ROOT_PASSWORD: test_pass
       MYSQL_DATABASE: nochat
       MYSQL_USER: root
       MYSQL_PASSWORD: 12345678
